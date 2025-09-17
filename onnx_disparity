@@ -1,0 +1,32 @@
+DROP TABLE image1
+/
+DROP TABLE image2
+/
+CREATE TABLE image1
+(ID INT, name varchar2(100), image BLOB, image_embedding vector) 
+/
+CREATE TABLE image2
+(ID INT, name varchar2(100), image BLOB, image_embedding vector) 
+/
+DROP DIRECTORY BLOB_DIR
+/
+TRUNCATE TABLE image1
+/
+TRUNCATE TABLE image2
+/
+CREATE DIRECTORY BLOB_DIR AS '&USER_DIRECTORY' --'YOUR IMAGE DIRECTORY'
+/
+GRANT READ ON DIRECTORY BLOB_DIR TO sys
+/ 
+INSERT INTO image1 (id, name, image, image_embedding) VALUES (1, 'IMAGE1', BFILENAME('BLOB_DIR', 'Pic1.jpg'), VECTOR('[0.1, 0.2, 0.3, 0.4]'))
+/
+COMMIT
+/    
+INSERT INTO image2 (id, name, image, image_embedding) VALUES (1, 'IMAGE1', BFILENAME('BLOB_DIR', 'Pic2.jpg'), VECTOR('[0.11, 0.21, 0.31, 0.41]'))
+/
+COMMIT
+/    
+select to_char(VECTOR_NORM(a.image_embedding - b.image_embedding),'fm999999990.00000000') ONNX_DISPARITY from image1 a, image2 b
+/
+
+
